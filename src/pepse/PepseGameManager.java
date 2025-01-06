@@ -26,7 +26,8 @@ public class PepseGameManager extends GameManager {
         GameObject sky = Sky.create(windowController.getWindowDimensions());
         // check later to be sure it's background
         gameObjects().addGameObject(sky, Layer.BACKGROUND);
-        Terrain terrain =  new Terrain(windowController.getWindowDimensions(),0);
+        Terrain terrain =  new Terrain(windowController.getWindowDimensions(),15);
+        System.out.println("Window height: "+ windowController.getWindowDimensions().y());
         List<Block> blocks = terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
         for (Block b : blocks) {
             gameObjects().addGameObject(b, Layer.STATIC_OBJECTS);

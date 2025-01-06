@@ -20,6 +20,7 @@ import static pepse.PepseConstants.START_HEIGHT_FACTOR;
 public class Terrain {
     private final NoiseGenerator ng;
     private final Vector2 windowDimensions;
+    private float groundHeightAtX0;
     private static final Renderable RENDERABLE =
             new RectangleRenderable
                     (ColorSupplier.approximateColor(BASE_GROUND_COLOR));
@@ -31,7 +32,7 @@ public class Terrain {
      */
     public Terrain(Vector2 windowDimensions, int seed) {
         this.windowDimensions = windowDimensions;
-        float groundHeightAtX0 = this.windowDimensions.y() * START_HEIGHT_FACTOR;
+        groundHeightAtX0 = this.windowDimensions.y() * START_HEIGHT_FACTOR;
         this.ng = new NoiseGenerator(seed, (int) groundHeightAtX0);
     }
 
@@ -44,9 +45,11 @@ public class Terrain {
      */
     public List<Block> createInRange(int minX, int maxX) {
         List<Block> blocks = new ArrayList<>();
+        minX = (int)(Math.floor((double) minX / Block.SIZE) * Block.SIZE);
+        maxX = (int)(Math.floor((double) maxX / Block.SIZE) * Block.SIZE);
         for (int x = minX; x <= maxX; x += Block.SIZE) {
             int currentHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
-            for (int y = (int) this.windowDimensions.y(); y >= currentHeight; y -= Block.SIZE) {
+            for (int y = currentHeight; y <= (int) this.windowDimensions.y(); y += Block.SIZE) {
                 Block myBlock = new Block(new Vector2(x, y), RENDERABLE);
                 myBlock.setTag(GROUND_TAG);
                 blocks.add(myBlock);
@@ -62,8 +65,9 @@ public class Terrain {
      * @return The ground height at the specified x-coordinate.
      */
     public float groundHeightAt(float x) {
-        float defaultHeight = DEFAULT_BLOCKS_AMOUNT_IN_COLUMN * Block.SIZE;
-        float newY = (float) (defaultHeight + this.ng.noise(x, (double) Block.SIZE * 7));
-        return Math.max(defaultHeight, newY);
+        float defaultHeight = this.windowDimensions.y()-
+                DEFAULT_BLOCKS_AMOUNT_IN_COLUMN * Block.SIZE;
+        float newY = (float) (this.groundHeightAtX0 + this.ng.noise(x, Block.SIZE*7));
+        return  Math.min(defaultHeight, newY);
     }
 }
