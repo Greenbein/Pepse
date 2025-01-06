@@ -10,7 +10,8 @@ import java.awt.*;
 import static pepse.PepseConstants.START_HEIGHT_FACTOR;
 
 /**
- *
+ * Here we build a class for sun object.
+ * It rotates according to day time around a specific point on a skyline
  */
 public class Sun{
     private static final String SUN_TAG= "sunTag";
@@ -21,10 +22,12 @@ public class Sun{
     private static final float FINAL_ANGLE = 360.0f;
 
     /**
-     *
-     * @param windowDimensions
-     * @param cycleLength
-     * @return
+     * This method creates a new Sun in a form of GameObject
+     * The sun is spawned above a central point on the skyline
+     * Then transition rotate the sun
+     * @param windowDimensions - dimensions of the screen
+     * @param cycleLength - transition time
+     * @return sun object of  type GameObject
      */
     public static GameObject create(Vector2 windowDimensions, float cycleLength){
         Vector2 initialSunCenter =  new Vector2(windowDimensions.x()/2 -DEFAULT_SUN_SIZE/2,
