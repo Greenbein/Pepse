@@ -13,7 +13,7 @@ import pepse.world.daynight.*;
 import java.util.List;
 
 /**
- *  Game manager of Pepse
+ *  Game manager of Pepses
  */
 public class PepseGameManager extends GameManager {
     @Override
