@@ -42,6 +42,9 @@ public class PepseGameManager extends GameManager {
 
         GameObject sun =  Sun.create(windowController.getWindowDimensions(),60);
         gameObjects().addGameObject(sun, Layer.BACKGROUND);
+
+        GameObject sunHalo = SunHalo.create(sun);
+        gameObjects().addGameObject(sunHalo, Layer.BACKGROUND);
     }
 
     /**
