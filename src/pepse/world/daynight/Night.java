@@ -40,17 +40,7 @@ public class Night {
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH, // need to go over this is the way we transition
                 null
         );
-//        new Transition<Float>(
-//                night, // the game object being changed
-//                night.renderer()::setOpaqueness, // the method to call
-//                0f, // initial transition value
-//                MIDNIGHT_OPACITY, // final transition value
-//
-//                Transition.CUBIC_INTERPOLATOR_FLOAT,// use a cubic interpolator
-//                ???, // transition fully over half a day
-//        Transition.TransitionType.???, // Choose appropriate ENUM value
-//        null
-//);// nothing further to execute upon reaching final value
+
         return night;
     }
 }
