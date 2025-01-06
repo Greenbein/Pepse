@@ -7,10 +7,12 @@ import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
+import danogl.util.Vector2;
 import pepse.world.*;
 import pepse.world.daynight.*;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  *  Game manager of Pepses
@@ -37,6 +39,9 @@ public class PepseGameManager extends GameManager {
         GameObject night = Night.create(windowController.getWindowDimensions(),30);
         // want to hide other objects from camera in game
         gameObjects().addGameObject(night, Layer.FOREGROUND);
+
+        GameObject sun =  Sun.create(windowController.getWindowDimensions(),60);
+        gameObjects().addGameObject(sun, Layer.BACKGROUND);
     }
 
     /**
