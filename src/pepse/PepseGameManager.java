@@ -8,6 +8,8 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import pepse.world.*;
+import pepse.world.daynight.*;
+
 import java.util.List;
 
 /**
@@ -27,11 +29,14 @@ public class PepseGameManager extends GameManager {
         // check later to be sure it's background
         gameObjects().addGameObject(sky, Layer.BACKGROUND);
         Terrain terrain =  new Terrain(windowController.getWindowDimensions(),15);
-        System.out.println("Window height: "+ windowController.getWindowDimensions().y());
         List<Block> blocks = terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
         for (Block b : blocks) {
             gameObjects().addGameObject(b, Layer.STATIC_OBJECTS);
         }
+        // from here Guy edited
+        GameObject night = Night.create(windowController.getWindowDimensions(),30);
+        // want to hide other objects from camera in game
+        gameObjects().addGameObject(night, Layer.FOREGROUND);
     }
 
     /**
