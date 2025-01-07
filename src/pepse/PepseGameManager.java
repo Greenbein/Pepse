@@ -36,7 +36,7 @@ public class PepseGameManager extends GameManager {
         GameObject sky = Sky.create(windowController.getWindowDimensions());
         // check later to be sure it's background
         gameObjects().addGameObject(sky, Layer.BACKGROUND);
-        Terrain terrain =  new Terrain(windowController.getWindowDimensions(),25);
+        Terrain terrain =  new Terrain(windowController.getWindowDimensions(),1);
         List<Block> blocks = terrain.createInRange(0, (int) windowController.getWindowDimensions().x());
         for (Block b : blocks) {
             gameObjects().addGameObject(b, Layer.STATIC_OBJECTS);
@@ -62,6 +62,9 @@ public class PepseGameManager extends GameManager {
     }
 
     @Override
+    /**
+     * this function updates Pepse game manager
+     */
     public void update(float deltaTime) {
         super.update(deltaTime);
         gameObjects().removeGameObject(energyBar,Layer.UI);

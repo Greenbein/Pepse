@@ -9,7 +9,6 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import java.awt.event.KeyEvent;
 
-import pepse.PepseConstants.
 
 /**
  * This class implements the game object avatar
@@ -24,14 +23,19 @@ public class Avatar extends GameObject {
     private static final float MIN_MOVEMENT_ENERGY = 0.5f;
     private static final float MIN_JUMP_ENERGY = 10f;
     private static final float AMOUNT_OF_ENERGY_TO_ADD = 1f;
+    private static final String IDLE = "idle";
+    private static final String JUMP = "jump";
+    private static final String RUN_RIGHT = "run right";
+    private static final String RUN_LEFT = "run left";
     //Pics for animations
-    private static Renderable idleZero, idleOne, idleTwo,idleThree;
-    private static Renderable jumpZero, jumpOne, jumpTwo, jumpThree;
-    private static Renderable runZero, runOne, runTwo, runThree, runFour, runFive;
+    private static Renderable [] idleArray;
+    private static Renderable [] jumpArray;
+    private static Renderable [] runArray;
     private UserInputListener inputListener;
-    private Renderable avatarRenderable;
     private float energy;
     private ImageReader imageReader;
+    private String currentState;
+    private String newState;
 
     /**
      * constructor of Avatar class
@@ -45,14 +49,16 @@ public class Avatar extends GameObject {
                 topLeftCorner.y()*(2.0f/3.0f)-DEFAULT_SPRITE_HEIGHT),Vector2.ONES.mult(50),
                 imageReader.readImage("assets/idle_0.png",
                         false));
-        System.out.println("X "+topLeftCorner.x() + " Y "+
-                (topLeftCorner.y()*(2.0f/3.0f)-DEFAULT_SPRITE_HEIGHT));
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         transform().setAccelerationY(GRAVITY);
         this.inputListener = inputListener;
         this.imageReader = imageReader;
         this.energy = MAX_ENERGY;
-
+        this.idleArray = createImageArrayIdle();
+        this.jumpArray = createImageArrayJump();
+        this.runArray = createImageArrayRun();
+        this.currentState = IDLE;
+        this.newState = IDLE;
     }
 
     /**
@@ -69,42 +75,75 @@ public class Avatar extends GameObject {
      */
     public void update(float deltaTime) {
         super.update(deltaTime);
+        this.newState = this.currentState;
+        if(!avatarRun() && !avatarJumps()){
+            avatarIdle();
+        }
+        if (!this.currentState.equals(this.newState)) {
+            System.out.println(this.newState);
+            switchRenderable(this.newState);
+            this.currentState = this.newState;
+        }
+    }
+
+    // this function handles the case the avatar runs
+    private boolean avatarRun() {
+        boolean runFlag = false;
         float xVel = 0;
-        if(inputListener.isKeyPressed(KeyEvent.VK_LEFT) &&
-                 !(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))){
-            if(this.energy >= MIN_MOVEMENT_ENERGY){
+        if (inputListener.isKeyPressed(KeyEvent.VK_LEFT) &&
+                !(inputListener.isKeyPressed(KeyEvent.VK_RIGHT))) {
+            if (this.energy >= MIN_MOVEMENT_ENERGY) {
+                runFlag = true;
+                this.newState = RUN_LEFT;
                 xVel -= VELOCITY_X;
-                if(getVelocity().y() == 0) {
+                if (getVelocity().y() == 0) {
                     this.energy -= MIN_MOVEMENT_ENERGY;
                 }
             }
         }
 
-        if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT) &&
-                !(inputListener.isKeyPressed(KeyEvent.VK_LEFT))){
-            if(this.energy >= MIN_MOVEMENT_ENERGY){
+        if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT) &&
+                !(inputListener.isKeyPressed(KeyEvent.VK_LEFT))) {
+            if (this.energy >= MIN_MOVEMENT_ENERGY) {
+                runFlag = true;
+                this.newState = RUN_RIGHT;
                 xVel += VELOCITY_X;
-                if(getVelocity().y() == 0) {
+                if (getVelocity().y() == 0) {
                     this.energy -= MIN_MOVEMENT_ENERGY;
                 }
             }
         }
         transform().setVelocityX(xVel);
-        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
-                getVelocity().y() == 0 && this.energy >= MIN_JUMP_ENERGY){
-            this.energy -= MIN_JUMP_ENERGY;
-            transform().setVelocityY(VELOCITY_Y);
-        }
+        return runFlag;
+    }
 
-        if (getVelocity().y() == 0 && getVelocity().x()==0){
+    // this function handles the case the avatar jumps
+    private boolean avatarJumps(){
+        if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
+                getVelocity().y() == 0){
+            if(this.energy >= MIN_JUMP_ENERGY){
+                this.newState = JUMP;
+                this.energy -= MIN_JUMP_ENERGY;
+                transform().setVelocityY(VELOCITY_Y);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // this function handles the case the avatar is idle
+    private void avatarIdle(){
+        if ((inputListener.isKeyPressed(KeyEvent.VK_RIGHT) &&
+                !(inputListener.isKeyPressed(KeyEvent.VK_LEFT))) ||
+                (getVelocity().y() == 0 && getVelocity().x() == 0)){
+            newState = IDLE;
             if(this.energy < MAX_UPDATE_ENERGY){
                 this.energy += AMOUNT_OF_ENERGY_TO_ADD;
             }
-            else if(this.energy == MAX_UPDATE_ENERGY){
+            else{
                 this.energy = MAX_ENERGY;
             }
         }
-        switchRenderable("idle");
     }
 
     /**
@@ -115,42 +154,85 @@ public class Avatar extends GameObject {
         this.energy += amount;
     }
 
-    private void uploadImages(){
-        idleZero = this.imageReader.readImage(IDLE_ZERO_PATH,false);
-        idleOne = this.imageReader.readImage(IDLE_ONE_PATH, false);
-        idleTwo = this.imageReader.readImage(IDLE_TWO_PATH, false);
-        idleThree = this.imageReader.readImage(IDLE_THREE_PATH, false);
+    // creates Image array of idle
+    private Renderable[] createImageArrayIdle(){
+        Renderable idleImage1 = this.imageReader.readImage("assets/idle_0.png",false);
+        Renderable idleImage2 = this.imageReader.readImage("assets/idle_1.png",false);
+        Renderable idleImage3 = this.imageReader.readImage("assets/idle_2.png",false);
+        Renderable idleImage4 = this.imageReader.readImage("assets/idle_3.png",false);
+        Renderable [] animationsIdle = {idleImage1, idleImage2, idleImage3, idleImage4};
+        return animationsIdle;
+    }
 
-        jumpZero = this.imageReader.readImage(JUMP_ZERO_PATH,false);
-        jumpOne = this.imageReader.readImage(JUMP_ONE_PATH, false);
-        jumpTwo = this.imageReader.readImage(JUMP_TWO_PATH, false);
-        jumpThree = this.imageReader.readImage(JUMP_THREE_PATH, false);
+    /**
+     *
+     * @return idle image array
+     */
+    public Renderable[] getIdleArray(){
+        return this.idleArray;
+    }
 
-        runZero = this.imageReader.readImage(RUN_ZERO_PATH,false);
-        runOne = this.imageReader.readImage(RUN_ONE_PATH, false);
-        runTwo = this.imageReader.readImage(RUN_TWO_PATH, false);
-        runThree = this.imageReader.readImage(RUN_THREE_PATH, false);
-        runFour = this.imageReader.readImage(RUN_FOUR_PATH, false);
-        runFive = this.imageReader.readImage(RUN_FIVE_PATH, false);
+    // creates Image array of jump
+    private Renderable[] createImageArrayJump(){
+        Renderable jumpImage1 = this.imageReader.readImage("assets/jump_0.png",false);
+        Renderable jumpImage2 = this.imageReader.readImage("assets/jump_1.png",false);
+        Renderable jumpImage3 = this.imageReader.readImage("assets/jump_2.png",false);
+        Renderable jumpImage4 = this.imageReader.readImage("assets/jump_3.png",false);
+        Renderable [] animationsJump = {jumpImage1, jumpImage2, jumpImage3, jumpImage4};
+        return animationsJump;
+    }
 
+    /**
+     *
+     * @return jump image array
+     */
+    public Renderable[] getjumpArray(){
+        return this.jumpArray;
+    }
 
+    // creates Image array of run
+    private Renderable[] createImageArrayRun(){
+        Renderable runImage1 = this.imageReader.readImage("assets/run_0.png",false);
+        Renderable runImage2 = this.imageReader.readImage("assets/run_1.png",false);
+        Renderable runImage3 = this.imageReader.readImage("assets/run_2.png",false);
+        Renderable runImage4 = this.imageReader.readImage("assets/run_3.png",false);
+        Renderable runImage5 = this.imageReader.readImage("assets/run_4.png",false);
+        Renderable runImage6 = this.imageReader.readImage("assets/run_5.png",false);
+        Renderable [] animationsRun = {runImage1, runImage2, runImage3, runImage4,runImage5,runImage6};
+        return animationsRun;
+    }
 
-
+    /**
+     *
+     * @return run image array
+     */
+    public Renderable[] getRunArray(){
+        return this.runArray;
     }
 
     // switch rendarable animation
     private void switchRenderable(String state){
-        Renderable IdleImage1 = this.imageReader.readImage("assets/idle_0.png",false);
-        Renderable IdleImage2 = this.imageReader.readImage("assets/idle_1.png",false);
-        Renderable IdleImage3 = this.imageReader.readImage("assets/idle_2.png",false);
-        Renderable IdleImage4 = this.imageReader.readImage("assets/idle_3.png",false);
+        Renderable [] imageArray;
+        AnimationRenderable animation;
         switch(state){
-            case "idle":
-                Renderable [] animationsIdle = {IdleImage1, IdleImage2, IdleImage3, IdleImage4};
-                AnimationRenderable animation = new AnimationRenderable(animationsIdle,10);
+            case IDLE:
+                animation = new AnimationRenderable(getIdleArray(),2);
                 this.renderer().setRenderable(animation);
-            default:
-
+                break;
+            case JUMP:
+                animation = new AnimationRenderable(getjumpArray(),2);
+                this.renderer().setRenderable(animation);
+                break;
+            case RUN_LEFT:
+                animation = new AnimationRenderable(getRunArray(),1);
+                this.renderer().setRenderable(animation);
+                this.renderer().setIsFlippedHorizontally(true);
+                break;
+            case RUN_RIGHT:
+                animation = new AnimationRenderable(getRunArray(),1);
+                this.renderer().setRenderable(animation);
+                this.renderer().setIsFlippedHorizontally(false);
+                break;
         }
     }
 }
