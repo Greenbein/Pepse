@@ -18,7 +18,9 @@ import pepse.world.trees.Tree;
 import pepse.world.trees.Flora;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -51,22 +53,19 @@ public class PepseGameManager extends GameManager {
                 inputListener, windowController);
         this.windowController = windowController;
         this.screenWidth = windowController.getWindowDimensions().x();
-//<<<<<<< HEAD
         this.windowController.setTargetFramerate(100);
-//=======
         this.windowController.setTargetFramerate(40);
-//>>>>>>> origin/main
         spawnSky();
         spawnNight();
         spawnSunAndHalo();
         spawnAvatar(inputListener,imageReader);
-        spawnFirstPartOfTheWorld();
+        //spawnFirstPartOfTheWorld();
         createEnergyBar();
         createVelocityBar();
         createCollisionBar();
         createGameObjectsSizeBar();
         createDeletedCounterBar();
-//        this.renderingController =  new RenderingController(this.avatar,windowController,this);
+        this.renderingController =  new RenderingController(this.avatar,windowController,this);
     }
 
     private void spawnFirstPartOfTheWorld() {
@@ -124,12 +123,15 @@ public class PepseGameManager extends GameManager {
             List<Block>leaves = t.getLeafBlocks();
             List<Block>fruits = t.getFruitBlocks();
             for (Block trunkBlock : trunk) {
+                trunkBlock.renderer().setRenderable(null);
                 gameObjects().addGameObject(trunkBlock, Layer.STATIC_OBJECTS);
             }
             for (Block fruitBlock : fruits) {
+                fruitBlock.renderer().setRenderable(null);
                 gameObjects().addGameObject(fruitBlock, Layer.DEFAULT);
             }
             for (Block leafBlock : leaves) {
+                leafBlock.renderer().setRenderable(null);
                 gameObjects().addGameObject(leafBlock, -1);
             }
         }
@@ -188,59 +190,89 @@ public class PepseGameManager extends GameManager {
         updateEnergyBar();
         updateVelocityBar();
         updateGameObjectsSizeBar();
-//        this.renderingController.updateAllObjectsArr();
-//        this.renderingController.selectObjectsAndDraw();
-        expandMap();
+        this.renderingController.updateAllObjectsArr();
+        this.renderingController.selectObjectsAndDraw();
+//        expandMap();
     }
 
-//<<<<<<< HEAD
-//    public void drawObjects(List<GameObject> objects) {
-//        int deletedCounter = 0;
-//        for(GameObject o : gameObjects()) {
-//            if(o.getTag().equals("fruit")){
-//                gameObjects().removeGameObject(o,Layer.DEFAULT);
-//                deletedCounter++;
-//            }
-//            else if(o.getTag().equals("trunk")){
-//                gameObjects().removeGameObject(o,Layer.STATIC_OBJECTS);
-//                deletedCounter++;
-//            }
-//            else if(o.getTag().equals("leaf")){
-//                gameObjects().removeGameObject(o,-1);
-//                deletedCounter++;
-//            }
-//            else if(o.getTag().equals("ground")){
-//                gameObjects().removeGameObject(o,Layer.STATIC_OBJECTS);
-//                deletedCounter++;
-//            }
-//        }
-//        updateDeletedCounterBar(deletedCounter);
-//        for (GameObject o : objects) {
-//            switch (o.getTag()) {
-//                case "trunk", "ground":
-//                    gameObjects().addGameObject(o, Layer.STATIC_OBJECTS);
-//                    break;
-//                case "leaf":
-//                    gameObjects().addGameObject(o, -1);
-//                    break;
-//                case "fruit":
-//                    gameObjects().addGameObject(o, Layer.DEFAULT);
-//                    break;
-//                default:
-//                    gameObjects().addGameObject(o, Layer.BACKGROUND);
-//            }
-//        }
-//    }
+    private boolean inOldCollection(GameObject obj){
+        for(GameObject o: gameObjects()){
+            if(o.getTopLeftCorner().x() == obj.getTopLeftCorner().x() && o.getTopLeftCorner().y() == obj.getTopLeftCorner().y()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isInList(GameObject obj, List<GameObject> list){
+        for(GameObject o: list){
+            if(o.getTopLeftCorner().x() == obj.getTopLeftCorner().x()
+                    && o.getTopLeftCorner().y() == obj.getTopLeftCorner().y()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void drawObjects(List<GameObject> objects) {
+        int deletedCounter = 0;
+        for(GameObject oldGameObject: gameObjects()) {
+            if(!isInList(oldGameObject,objects)){
+                removeByTag(oldGameObject);
+                deletedCounter++;
+            }
+        }
+        updateDeletedCounterBar(deletedCounter);
+        for(GameObject potentialNewObject: objects){
+            if(!inOldCollection(potentialNewObject)){
+                addByTag(potentialNewObject);
+            }
+        }
+    }
+
+    private void addByTag(GameObject o) {
+        switch (o.getTag()) {
+            case "trunk", "ground":
+                gameObjects().addGameObject(o, Layer.STATIC_OBJECTS);
+                break;
+            case "leaf":
+                gameObjects().addGameObject(o, -1);
+                break;
+            case "fruit":
+                gameObjects().addGameObject(o, Layer.DEFAULT);
+                break;
+            default:
+                gameObjects().addGameObject(o, Layer.BACKGROUND);
+        }
+    }
+
+    private void removeByTag(GameObject o) {
+        switch (o.getTag()) {
+            case "trunk", "ground":
+                gameObjects().removeGameObject(o, Layer.STATIC_OBJECTS);
+                break;
+            case "leaf":
+                gameObjects().removeGameObject(o, -1);
+                break;
+            case "fruit":
+                gameObjects().removeGameObject(o, Layer.DEFAULT);
+                break;
+            default:
+                break;
+        }
+    }
+
+
 
     private void updateVelocityBar() {
         TextRenderable velocityText = new TextRenderable("Avatar's velocity :" + this.avatar.getVelocity().toString());
         this.velocityBar.renderer().setRenderable(velocityText);
     }
 
-//    private void updateDeletedCounterBar(int counter) {
-//        TextRenderable deletedCounterText = new TextRenderable("Objects have been deleted :"+counter);
-//        this.deletedCounterBar.renderer().setRenderable(deletedCounterText);
-//    }
+    private void updateDeletedCounterBar(int counter) {
+        TextRenderable deletedCounterText = new TextRenderable("Objects have been deleted :"+counter);
+        this.deletedCounterBar.renderer().setRenderable(deletedCounterText);
+    }
 
     private void updateGameObjectsSizeBar() {
         int counter = 0;
@@ -256,14 +288,10 @@ public class PepseGameManager extends GameManager {
         this.energyBar.renderer().setRenderable(text);
     }
 
-//=======
-//    /**
-//     * this function removes an object from the game
-//     * @param object the object we would remove
-//     * @param layer the layer we would remove the object from
-//     */
-//>>>>>>> origin/main
     public void removeObject(GameObject object,int layer) {
+        if(object.getTag().equals("fruit")){
+            this.renderingController.removeObject(object);
+        }
         gameObjects().removeGameObject(object,layer);
     }
 
