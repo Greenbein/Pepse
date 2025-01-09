@@ -1,6 +1,7 @@
 package pepse.world;
 
 import danogl.GameObject;
+import danogl.collisions.Collision;
 import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
@@ -9,7 +10,7 @@ import danogl.util.Vector2;
  *  This class implements block functionality in game
  */
 public class Block extends GameObject {
-    public static final int SIZE = 30;
+    public static final int SIZE = 40;
 
     /**
      * constructor of block

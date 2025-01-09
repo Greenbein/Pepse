@@ -1,12 +1,18 @@
 package pepse.world;
 
+import danogl.GameManager;
 import danogl.GameObject;
+import danogl.collisions.Collision;
+import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.gui.rendering.Renderable;
+import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
+import pepse.PepseGameManager;
+
 import java.awt.event.KeyEvent;
 
 
@@ -36,6 +42,7 @@ public class Avatar extends GameObject {
     private ImageReader imageReader;
     private String currentState;
     private String newState;
+    private PepseGameManager gameManager;
 
     /**
      * constructor of Avatar class
@@ -44,7 +51,7 @@ public class Avatar extends GameObject {
      * @param imageReader reads the image we give it
      */
     public Avatar(Vector2 topLeftCorner, UserInputListener inputListener,
-                  ImageReader imageReader) {
+                  ImageReader imageReader, PepseGameManager gameManager) {
         super( new Vector2(0,
                 topLeftCorner.y()*(2.0f/3.0f)-DEFAULT_SPRITE_HEIGHT),Vector2.ONES.mult(50),
                 imageReader.readImage("assets/idle_0.png",
@@ -59,6 +66,7 @@ public class Avatar extends GameObject {
         this.runArray = createImageArrayRun();
         this.currentState = IDLE;
         this.newState = IDLE;
+        this.gameManager = gameManager;
     }
 
     /**
@@ -80,7 +88,7 @@ public class Avatar extends GameObject {
             avatarIdle();
         }
         if (!this.currentState.equals(this.newState)) {
-            System.out.println(this.newState);
+//            System.out.println(this.newState);
             switchRenderable(this.newState);
             this.currentState = this.newState;
         }
@@ -233,6 +241,31 @@ public class Avatar extends GameObject {
                 this.renderer().setRenderable(animation);
                 this.renderer().setIsFlippedHorizontally(false);
                 break;
+        }
+    }
+
+    @Override
+    public boolean shouldCollideWith(GameObject other) {
+        return other.getTag().equals("fruit")||other.getTag().equals("ground")||other.getTag().equals("trunk");
+    }
+
+    @Override
+    public void onCollisionEnter(GameObject other, Collision collision) {
+        super.onCollisionEnter(other, collision);
+        String message = "Colliding with: "+other.getTag();
+        TextRenderable text = new TextRenderable(message);
+        this.gameManager.collisionBar.renderer().setRenderable(text);
+        if(other.getTag().equals("ground")){
+            this.setVelocity(Vector2.ZERO);
+        }
+        if(other.getTag().equals("fruit")){
+            if(this.energy+10.0f>MAX_ENERGY){
+                this.energy=MAX_ENERGY;
+            }
+            else{
+                this.energy+=10.0f;
+            }
+            this.gameManager.removeObject(other, Layer.DEFAULT);
         }
     }
 }

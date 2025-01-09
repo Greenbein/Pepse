@@ -21,9 +21,8 @@ public class Terrain {
     private final NoiseGenerator ng;
     private final Vector2 windowDimensions;
     private float groundHeightAtX0;
-    private static final Renderable RENDERABLE =
-            new RectangleRenderable
-                    (ColorSupplier.approximateColor(BASE_GROUND_COLOR));
+    //-------------------EXTENDED API---------------------------
+    private List<Vector2> skyLineCoordinates;
 
     /**
      * Creates a Terrain object to manage ground blocks with dynamic height using noise generation.
@@ -33,6 +32,7 @@ public class Terrain {
     public Terrain(Vector2 windowDimensions, int seed) {
         this.windowDimensions = windowDimensions;
         groundHeightAtX0 = this.windowDimensions.y() * START_HEIGHT_FACTOR;
+        this.skyLineCoordinates = new ArrayList<>();
         this.ng = new NoiseGenerator(seed, (int) groundHeightAtX0);
     }
 
@@ -48,9 +48,14 @@ public class Terrain {
         minX = (int)(Math.floor((double) minX / Block.SIZE) * Block.SIZE);
         maxX = (int)(Math.floor((double) maxX / Block.SIZE) * Block.SIZE);
         for (int x = minX; x <= maxX; x += Block.SIZE) {
+            //Flat land case
+//            int currentHeight = (int)(this.windowDimensions.y()*(2.0f/3.0f));
             int currentHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
-            for (int y = currentHeight; y <= (int) this.windowDimensions.y(); y += Block.SIZE) {
-                Block myBlock = new Block(new Vector2(x, y), RENDERABLE);
+            this.skyLineCoordinates.add(new Vector2(x, currentHeight));
+            for (int y = currentHeight; y <= (int) this.windowDimensions.y()+Block.SIZE*5; y += Block.SIZE) {
+                Block myBlock = new Block(new Vector2(x, y),
+                        new RectangleRenderable
+                        (ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
                 myBlock.setTag(GROUND_TAG);
                 blocks.add(myBlock);
             }
@@ -69,5 +74,10 @@ public class Terrain {
                 DEFAULT_BLOCKS_AMOUNT_IN_COLUMN * Block.SIZE;
         float newY = (float) (this.groundHeightAtX0 + this.ng.noise(x, Block.SIZE*7));
         return  Math.min(defaultHeight, newY);
+    }
+
+    //-------------------EXTENDED API---------------------------
+    public List<Vector2> getSkyLineCoordinates() {
+        return this.skyLineCoordinates;
     }
 }
