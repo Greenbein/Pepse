@@ -51,7 +51,11 @@ public class PepseGameManager extends GameManager {
                 inputListener, windowController);
         this.windowController = windowController;
         this.screenWidth = windowController.getWindowDimensions().x();
+//<<<<<<< HEAD
         this.windowController.setTargetFramerate(100);
+//=======
+        this.windowController.setTargetFramerate(40);
+//>>>>>>> origin/main
         spawnSky();
         spawnNight();
         spawnSunAndHalo();
@@ -176,6 +180,9 @@ public class PepseGameManager extends GameManager {
     }
 
     @Override
+    /**
+     * this function updates the game
+     */
     public void update(float deltaTime) {
         super.update(deltaTime);
         updateEnergyBar();
@@ -186,6 +193,7 @@ public class PepseGameManager extends GameManager {
         expandMap();
     }
 
+//<<<<<<< HEAD
 //    public void drawObjects(List<GameObject> objects) {
 //        int deletedCounter = 0;
 //        for(GameObject o : gameObjects()) {
@@ -248,6 +256,13 @@ public class PepseGameManager extends GameManager {
         this.energyBar.renderer().setRenderable(text);
     }
 
+//=======
+//    /**
+//     * this function removes an object from the game
+//     * @param object the object we would remove
+//     * @param layer the layer we would remove the object from
+//     */
+//>>>>>>> origin/main
     public void removeObject(GameObject object,int layer) {
         gameObjects().removeGameObject(object,layer);
     }
