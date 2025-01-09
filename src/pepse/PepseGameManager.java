@@ -2,6 +2,7 @@ package pepse;
 
 import danogl.GameManager;
 import danogl.GameObject;
+import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.components.CoordinateSpace;
 import danogl.gui.ImageReader;
@@ -16,6 +17,7 @@ import pepse.world.daynight.*;
 import pepse.world.trees.Tree;
 import pepse.world.trees.Flora;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,7 +30,12 @@ public class PepseGameManager extends GameManager {
     private float leftBorder;
     private GameObject energyBar;
     public GameObject collisionBar;
+    private GameObject velocityBar;
+    private GameObject gameObjectsSizeBar;
+    private GameObject deletedCounterBar;
     private WindowController windowController;
+    private RenderingController renderingController;
+
     private  Terrain terrain;
     private float screenWidth;
     private float spawnZone;
@@ -44,22 +51,24 @@ public class PepseGameManager extends GameManager {
                 inputListener, windowController);
         this.windowController = windowController;
         this.screenWidth = windowController.getWindowDimensions().x();
-//        this.windowController.setTargetFramerate(10);
+        this.windowController.setTargetFramerate(100);
         spawnSky();
         spawnNight();
         spawnSunAndHalo();
-
-        spawnWorld(-(int)this.screenWidth*2, (int)this.screenWidth*3);
-        this.rightBorder = this.screenWidth*2;
-        this.leftBorder = -this.screenWidth*2;
         spawnAvatar(inputListener,imageReader);
+        spawnFirstPartOfTheWorld();
+        createEnergyBar();
+        createVelocityBar();
+        createCollisionBar();
+        createGameObjectsSizeBar();
+        createDeletedCounterBar();
+//        this.renderingController =  new RenderingController(this.avatar,windowController,this);
+    }
 
-        collisionBar =  new GameObject(new Vector2(0,100), new Vector2(20,20),null);
-        collisionBar.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        gameObjects().addGameObject(collisionBar);
-        setCamera(new Camera(avatar, Vector2.ZERO,
-                windowController.getWindowDimensions(),
-                windowController.getWindowDimensions()));
+    private void spawnFirstPartOfTheWorld() {
+        spawnWorld(-(int)(this.screenWidth*1.5f),(int)(this.screenWidth*1.5f));
+        this.rightBorder = this.screenWidth*1.5f;
+        this.leftBorder = -this.screenWidth*1.5f;
     }
 
     private void spawnSky(){
@@ -71,6 +80,7 @@ public class PepseGameManager extends GameManager {
         spawnGround(minX,maxX);
         spawnTrees(minX,maxX);
     }
+
     private void spawnGround(int minX, int maxX){
         this.terrain =  new Terrain(windowController.getWindowDimensions(),25);
         List<Block> groundBlocks = terrain.createInRange(minX, maxX);
@@ -97,10 +107,13 @@ public class PepseGameManager extends GameManager {
         this.avatar = new Avatar(windowController.getWindowDimensions(),inputListener,imageReader,this);
         this.avatar.setTag("avatar");
         gameObjects().addGameObject(avatar, Layer.DEFAULT);
+        setCamera(new Camera(avatar, Vector2.ZERO,
+                windowController.getWindowDimensions(),
+                windowController.getWindowDimensions()));
     }
 
     private void spawnTrees(int minX, int maxX){
-        Flora treesSpawner = new Flora(this.terrain.getSkyLineCoordinates());
+        Flora treesSpawner = new Flora(this.terrain.getSkyLineCoordinates(this.avatar));
         List<Tree> trees = treesSpawner.createInRange(minX,maxX);
         for (Tree t : trees) {
             List<Block>trunk = t.getTrunkBlocks();
@@ -118,10 +131,40 @@ public class PepseGameManager extends GameManager {
         }
     }
 
+    private void createEnergyBar(){
+        this.energyBar =  new GameObject(Vector2.ZERO, new Vector2(20,20),null);
+        this.energyBar.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        gameObjects().addGameObject(energyBar, Layer.UI);
+    }
+
+    private void createCollisionBar() {
+        collisionBar =  new GameObject(new Vector2(0,20), new Vector2(20,20),null);
+        collisionBar.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        gameObjects().addGameObject(collisionBar, Layer.UI);
+    }
+
+    private void createVelocityBar(){
+        this.velocityBar =  new GameObject(new Vector2(0,40), new Vector2(20,20),null);
+        this.velocityBar.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        gameObjects().addGameObject(velocityBar, Layer.UI);
+    }
+
+    private void createGameObjectsSizeBar() {
+        this.gameObjectsSizeBar =  new GameObject(new Vector2(0,60), new Vector2(20,20),null);
+        this.gameObjectsSizeBar.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        gameObjects().addGameObject(gameObjectsSizeBar,Layer.UI);
+    }
+
+    private void createDeletedCounterBar(){
+        this.deletedCounterBar =  new GameObject(new Vector2(0,80), new Vector2(20,20),null);
+        this.deletedCounterBar.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
+        gameObjects().addGameObject(deletedCounterBar, Layer.UI);
+    }
+
 
     private void expandMap(){
-        float farRightX = this.avatar.getTopLeftCorner().x()+this.screenWidth*2f;
-        float farLeftX = this.avatar.getTopLeftCorner().x()-this.screenWidth*2f;
+        float farRightX = this.avatar.getTopLeftCorner().x()+this.screenWidth*1.5f;
+        float farLeftX = this.avatar.getTopLeftCorner().x()-this.screenWidth*1.5f;
         if(farRightX>=this.rightBorder){
            spawnWorld((int)farRightX,(int)(farRightX+this.screenWidth));
            this.rightBorder=farRightX+this.screenWidth;
@@ -131,15 +174,78 @@ public class PepseGameManager extends GameManager {
             this.leftBorder=farLeftX-this.screenWidth;
         }
     }
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
-        gameObjects().removeGameObject(energyBar,Layer.UI);
-        TextRenderable text = new TextRenderable(String.valueOf(this.avatar.getEnergy()));
-        energyBar =  new GameObject(Vector2.ZERO, new Vector2(50,50),text);
-        energyBar.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        gameObjects().addGameObject(energyBar, Layer.UI);
+        updateEnergyBar();
+        updateVelocityBar();
+        updateGameObjectsSizeBar();
+//        this.renderingController.updateAllObjectsArr();
+//        this.renderingController.selectObjectsAndDraw();
         expandMap();
+    }
+
+//    public void drawObjects(List<GameObject> objects) {
+//        int deletedCounter = 0;
+//        for(GameObject o : gameObjects()) {
+//            if(o.getTag().equals("fruit")){
+//                gameObjects().removeGameObject(o,Layer.DEFAULT);
+//                deletedCounter++;
+//            }
+//            else if(o.getTag().equals("trunk")){
+//                gameObjects().removeGameObject(o,Layer.STATIC_OBJECTS);
+//                deletedCounter++;
+//            }
+//            else if(o.getTag().equals("leaf")){
+//                gameObjects().removeGameObject(o,-1);
+//                deletedCounter++;
+//            }
+//            else if(o.getTag().equals("ground")){
+//                gameObjects().removeGameObject(o,Layer.STATIC_OBJECTS);
+//                deletedCounter++;
+//            }
+//        }
+//        updateDeletedCounterBar(deletedCounter);
+//        for (GameObject o : objects) {
+//            switch (o.getTag()) {
+//                case "trunk", "ground":
+//                    gameObjects().addGameObject(o, Layer.STATIC_OBJECTS);
+//                    break;
+//                case "leaf":
+//                    gameObjects().addGameObject(o, -1);
+//                    break;
+//                case "fruit":
+//                    gameObjects().addGameObject(o, Layer.DEFAULT);
+//                    break;
+//                default:
+//                    gameObjects().addGameObject(o, Layer.BACKGROUND);
+//            }
+//        }
+//    }
+
+    private void updateVelocityBar() {
+        TextRenderable velocityText = new TextRenderable("Avatar's velocity :" + this.avatar.getVelocity().toString());
+        this.velocityBar.renderer().setRenderable(velocityText);
+    }
+
+//    private void updateDeletedCounterBar(int counter) {
+//        TextRenderable deletedCounterText = new TextRenderable("Objects have been deleted :"+counter);
+//        this.deletedCounterBar.renderer().setRenderable(deletedCounterText);
+//    }
+
+    private void updateGameObjectsSizeBar() {
+        int counter = 0;
+        for (GameObject o : gameObjects()) {
+            counter++;
+        }
+        TextRenderable sizeText = new TextRenderable("There are :"+ counter+" objects");
+        this.gameObjectsSizeBar.renderer().setRenderable(sizeText);
+    }
+
+    private void updateEnergyBar() {
+        TextRenderable text = new TextRenderable(String.valueOf(this.avatar.getEnergy()));
+        this.energyBar.renderer().setRenderable(text);
     }
 
     public void removeObject(GameObject object,int layer) {

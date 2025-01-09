@@ -20,6 +20,7 @@ import java.awt.event.KeyEvent;
  * This class implements the game object avatar
  */
 public class Avatar extends GameObject {
+    private static final String AVATAR_TAG = "avatar";
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -650;
     private static final float GRAVITY = 1000;
@@ -67,6 +68,7 @@ public class Avatar extends GameObject {
         this.currentState = IDLE;
         this.newState = IDLE;
         this.gameManager = gameManager;
+        this.setTag(AVATAR_TAG);
     }
 
     /**
@@ -256,7 +258,16 @@ public class Avatar extends GameObject {
         TextRenderable text = new TextRenderable(message);
         this.gameManager.collisionBar.renderer().setRenderable(text);
         if(other.getTag().equals("ground")){
-            this.setVelocity(Vector2.ZERO);
+            this.transform().setVelocityY(0);
+//            if(this.getTopLeftCorner().y()>=other.getTopLeftCorner().y()+Block.SIZE/2.0f){
+//                this.setTopLeftCorner(new Vector2(this.getTopLeftCorner().x(),this.getTopLeftCorner().y()-Block.SIZE));
+//            }
+        }
+        if(other.getTag().equals("trunk")){
+            this.transform().setVelocityX(0);
+//            if(this.getTopLeftCorner().y()>=other.getTopLeftCorner().y()+Block.SIZE/2.0f){
+//                this.setTopLeftCorner(new Vector2(this.getTopLeftCorner().x(),this.getTopLeftCorner().y()-Block.SIZE));
+//            }
         }
         if(other.getTag().equals("fruit")){
             if(this.energy+10.0f>MAX_ENERGY){

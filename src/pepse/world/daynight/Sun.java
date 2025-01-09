@@ -15,7 +15,7 @@ import static pepse.PepseConstants.START_HEIGHT_FACTOR;
  * It rotates according to day time around a specific point on a skyline
  */
 public class Sun{
-    private static final String SUN_TAG= "sunTag";
+    private static final String SUN_TAG= "sun";
     private static final Renderable OVAL = new OvalRenderable(Color.YELLOW);
     private static final float DEFAULT_SUN_SIZE = 100.0f;
     private static final float ROTATION_RADIUS = 300.0f;

@@ -13,7 +13,7 @@ import java.awt.*;
  */
 public class SunHalo {
     private static final Color HALO_COLOR = new Color(255,255,0,20);
-    private static final String TAG = "sunHalo";
+    private static final String SUN_HALO_TAG = "sunHalo";
     private static final Renderable HALO_RENDERABLE = new OvalRenderable(HALO_COLOR);
     private static final float DEFAULT_HALO_SUN_SIZE = 200;
 
@@ -29,7 +29,7 @@ public class SunHalo {
                 new Vector2(DEFAULT_HALO_SUN_SIZE,DEFAULT_HALO_SUN_SIZE),
                 HALO_RENDERABLE);
         sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        sunHalo.setTag(TAG);
+        sunHalo.setTag(SUN_HALO_TAG);
         sunHalo.addComponent((float deltatime) -> {
             sunHalo.setCenter(sun.getCenter());
         });

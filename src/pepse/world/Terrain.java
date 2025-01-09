@@ -1,9 +1,11 @@
 package pepse.world;
+import danogl.GameObject;
 import danogl.gui.rendering.RectangleRenderable;
-import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 import pepse.util.NoiseGenerator;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,9 +55,18 @@ public class Terrain {
             int currentHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
             this.skyLineCoordinates.add(new Vector2(x, currentHeight));
             for (int y = currentHeight; y <= (int) this.windowDimensions.y()+Block.SIZE*5; y += Block.SIZE) {
-                Block myBlock = new Block(new Vector2(x, y),
-                        new RectangleRenderable
-                        (ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
+                Block myBlock;
+                if(x==minX){
+                    myBlock = new Block(new Vector2(x, y),
+                            new RectangleRenderable
+                                    (ColorSupplier.approximateColor(Color.RED)));
+                }
+                else {
+                    myBlock = new Block(new Vector2(x, y),
+                            new RectangleRenderable
+                                    (ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
+                }
+//                myBlock.setDimensions(Vector2.ONES.mult(Block.SIZE*3));
                 myBlock.setTag(GROUND_TAG);
                 blocks.add(myBlock);
             }
@@ -77,7 +88,13 @@ public class Terrain {
     }
 
     //-------------------EXTENDED API---------------------------
-    public List<Vector2> getSkyLineCoordinates() {
-        return this.skyLineCoordinates;
+    public List<Vector2> getSkyLineCoordinates(GameObject avatar) {
+        List<Vector2>mySkyLineCoordinates = new ArrayList<>();
+        for(Vector2 skyLineCoordinate : this.skyLineCoordinates){
+            if(skyLineCoordinate.x()!=avatar.getTopLeftCorner().x()){
+                mySkyLineCoordinates.add(skyLineCoordinate);
+            }
+        }
+        return mySkyLineCoordinates;
     }
 }

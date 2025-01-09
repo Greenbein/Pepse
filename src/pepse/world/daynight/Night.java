@@ -20,7 +20,7 @@ public class Night {
     private static final Renderable NIGHT_RENDERABLE =
             new RectangleRenderable
                     (ColorSupplier.approximateColor(BASIC_NIGHT_COLOR));
-    private static final String TAG = "night";
+    private static final String NIGHT_TAG = "night";
     private static final Float MIDNIGHT_OPACITY = 0.5f;
 
     /**
@@ -33,7 +33,7 @@ public class Night {
         GameObject night = new GameObject(Vector2.ZERO,
                 windowDimensions, NIGHT_RENDERABLE);
         night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        night.setTag(TAG);
+        night.setTag(NIGHT_TAG);
         new Transition<Float>(
                 night, // the game object being changed
                 night.renderer()::setOpaqueness, // the method to call

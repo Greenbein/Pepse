@@ -1,5 +1,6 @@
 package pepse.world.trees;
 
+import danogl.GameObject;
 import danogl.util.Vector2;
 import pepse.world.Block;
 
@@ -34,8 +35,8 @@ public class Flora {
         List<Tree>trees = new ArrayList<>();
         int [] tempArr =  new int[maxX-minX];
         int numBlocksInRange = (maxX - minX) / Block.SIZE + 1;
-        System.out.println("Number of blocks in range: "+numBlocksInRange);
-        System.out.println("Sky line array length: "+skyLineCoords.size());
+//        System.out.println("Number of blocks in range: "+numBlocksInRange);
+//        System.out.println("Sky line array length: "+skyLineCoords.size());
         for (int x = 0; x<=numBlocksInRange; x++){
             float randomCoinResult = rand.nextFloat(1);
             if(randomCoinResult < TREE_PROBABILITY) {
