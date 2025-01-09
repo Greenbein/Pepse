@@ -48,6 +48,7 @@ public class Tree{
         createTree(bottomLeftTrunkCorner);
     }
 
+    // this function creates a tree
     private void createTree(Vector2 bottomLeftTrunkCorner){
 //        int trunkHeight = this.rand.nextInt(3) + DEFAULT_TRUNK_BLOCK_AMOUNT;
 //        int rows = this.rand.nextInt(4) +DEFAULT_LEAFS_ROWS;
@@ -58,6 +59,7 @@ public class Tree{
 
     }
 
+    // this function creates tree trunk blocks
     private void generateTrunkBlocks(Vector2 bottomLeftTrunkCorner, int trunkHeight){
         float x = bottomLeftTrunkCorner.x();
         float y = bottomLeftTrunkCorner.y()-Block.SIZE;
@@ -69,6 +71,7 @@ public class Tree{
         }
     }
 
+    // this function creates leaf blocks
     private void generateLeafBlocks(Vector2 bottomLeftTrunkCorner,int rows,int cols,int trunkHeight){
         float x = bottomLeftTrunkCorner.x() - (rows/2.0f)*Block.SIZE;
         float y = bottomLeftTrunkCorner.y()-Block.SIZE*(trunkHeight+1)-Block.SIZE*(cols/2.0f);
@@ -155,6 +158,7 @@ public class Tree{
         fruitBlock.setTag(FRUIT);
         this.fruitBlocks.add(fruitBlock);
     }
+
 
     private void placeRandomNumberXTimes(int[][] array, int x, int number) {
         int zeroCount = 0;

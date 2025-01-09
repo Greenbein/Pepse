@@ -88,7 +88,6 @@ public class Avatar extends GameObject {
             avatarIdle();
         }
         if (!this.currentState.equals(this.newState)) {
-//            System.out.println(this.newState);
             switchRenderable(this.newState);
             this.currentState = this.newState;
         }
@@ -141,9 +140,7 @@ public class Avatar extends GameObject {
 
     // this function handles the case the avatar is idle
     private void avatarIdle(){
-        if ((inputListener.isKeyPressed(KeyEvent.VK_RIGHT) &&
-                !(inputListener.isKeyPressed(KeyEvent.VK_LEFT))) ||
-                (getVelocity().y() == 0 && getVelocity().x() == 0)){
+        if (getVelocity().y() == 0 && getVelocity().x() == 0){
             newState = IDLE;
             if(this.energy < MAX_UPDATE_ENERGY){
                 this.energy += AMOUNT_OF_ENERGY_TO_ADD;
@@ -254,16 +251,16 @@ public class Avatar extends GameObject {
         super.onCollisionEnter(other, collision);
         String message = "Colliding with: "+other.getTag();
         TextRenderable text = new TextRenderable(message);
-        this.gameManager.collisionBar.renderer().setRenderable(text);
+//        this.gameManager.collisionBar.renderer().setRenderable(text);
         if(other.getTag().equals("ground")){
-            this.setVelocity(Vector2.ZERO);
+            this.transform().setVelocityY(0);
         }
         if(other.getTag().equals("fruit")){
             if(this.energy+10.0f>MAX_ENERGY){
                 this.energy=MAX_ENERGY;
             }
             else{
-                this.energy+=10.0f;
+                addEnergy(10f);
             }
             this.gameManager.removeObject(other, Layer.DEFAULT);
         }
