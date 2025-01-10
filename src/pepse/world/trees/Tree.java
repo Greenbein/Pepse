@@ -16,8 +16,10 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Tree class. It contains two lists of block.
- * The first one for its trunk and the second one for its foliage
+ * Tree class. It contains three lists of blocks.
+ * The first one for the trunk
+ * The second one for the leafs
+ * The third one for the fruits
  */
 public class Tree{
     private static final Color BASE_TRUNK_COLOR = new Color(100, 50, 20);
@@ -40,7 +42,7 @@ public class Tree{
     /**
      * Constructor for Tree class
      * @param bottomLeftTrunkCorner - bottom left corner of bottom trunk block.
-     *                                Basically, it is top left corner of ground block where a tree should be planted.
+     * Basically, it is top left corner of ground block where a tree should be planted.
      */
     public Tree(Vector2 bottomLeftTrunkCorner){
         this.rand = new Random();
@@ -50,7 +52,7 @@ public class Tree{
         createTree(bottomLeftTrunkCorner);
     }
 
-    // this function creates a tree
+    // create a new tree
     private void createTree(Vector2 bottomLeftTrunkCorner){
         generateTrunkBlocks(bottomLeftTrunkCorner, DEFAULT_TRUNK_BLOCK_AMOUNT);
         generateLeafBlocks(bottomLeftTrunkCorner,DEFAULT_LEAFS_ROWS,DEFAULT_LEAFS_COLS,DEFAULT_TRUNK_BLOCK_AMOUNT);
@@ -58,7 +60,7 @@ public class Tree{
 
     }
 
-    // this function creates tree trunk blocks
+    // create tree's trunk blocks
     private void generateTrunkBlocks(Vector2 bottomLeftTrunkCorner, int trunkHeight){
         float x = bottomLeftTrunkCorner.x();
         float y = bottomLeftTrunkCorner.y()-Block.SIZE;
@@ -70,7 +72,7 @@ public class Tree{
         }
     }
 
-    // this function creates leaf blocks
+    // create tree's leaf blocks
     private void generateLeafBlocks(Vector2 bottomLeftTrunkCorner,int rows,int cols,int trunkHeight){
         float x = bottomLeftTrunkCorner.x() - (rows/2.0f)*Block.SIZE;
         float y = bottomLeftTrunkCorner.y()-Block.SIZE*(trunkHeight+1)-Block.SIZE*(cols/2.0f);
@@ -86,6 +88,7 @@ public class Tree{
         }
     }
 
+    // add a new leaf block to the leafs array
     private void addLeafBlock(float x, int i, float y, int j) {
         Vector2 coordinates = new Vector2(x + Block.SIZE* i, y +Block.SIZE* j);
         Block leafBlock = new Block(new Vector2(coordinates),
@@ -126,6 +129,7 @@ public class Tree{
         this.leafBlocks.add(leafBlock);
     }
 
+    // create tree's fruit blocks
     private void generateFruitBlocks(Vector2 bottomLeftTrunkCorner,int rows,int cols,int trunkHeight){
         float x = bottomLeftTrunkCorner.x() - 4*Block.SIZE;
         float y = bottomLeftTrunkCorner.y()-Block.SIZE*(trunkHeight+1)-Block.SIZE*(cols/2.0f);
@@ -142,6 +146,7 @@ public class Tree{
         }
     }
 
+    // add a new fruit to the fruits array
     private void addFruitBlock(Vector2 coordinates) {
         Block fruitBlock;
         int redOrYellow = this.rand.nextInt(2);
@@ -158,14 +163,17 @@ public class Tree{
         this.fruitBlocks.add(fruitBlock);
     }
 
+    // get trunk blocks array
     public List<Block> getTrunkBlocks(){
         return this.trunkBlocks;
     }
 
+    // get leaf blocks array
     public List<Block> getLeafBlocks(){
         return this.leafBlocks;
     }
 
+    // get fruit blocks array
     public List<Block> getFruitBlocks(){
         return this.fruitBlocks;
     }

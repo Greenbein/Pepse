@@ -7,12 +7,21 @@ import pepse.world.Block;
 import java.util.*;
 
 /**
- *
+ * Flora spawns trees, i.e. arrays for trunks,leafs and fruits,
+ * when we want to enlarge the game world
  */
 public class Flora {
     private static final float TREE_PROBABILITY = 0.1f;
     private final List<Vector2> skyLineCoords;
     private final Random rand;
+
+    /**
+     * Flora's constructor
+     * @param skyLineCoords - List of skyline blocks.
+     *                      Each block in this list has a ground tag
+     *                      We use it to plant a new somewhere on the ground
+     *                      (not in the sky or underground)
+     */
     public Flora(List<Vector2>skyLineCoords) {
         this.skyLineCoords = skyLineCoords;
         this.rand = new Random();
@@ -20,11 +29,14 @@ public class Flora {
     /**
      * The function creates an array of trees
      * Rounds minX and maxX
-     * Creates an array of block that are upper ground block (extracts it from groundBlocks)
+     * Creates an array of block that are upper ground block
+     * (extracts it from groundBlocks)
      * Passes through all x coords of columns in the area [minX,...,maxX]
      * For x it generates a random number from 1 to 10
-     * If the number equals to 1, it creates a new tree with BOTTOM left corner,
-     * that equals to TOP left corner of a block with the index x in upperGroundBlocks array
+     * If the number equals to 1, it creates a new tree with
+     * BOTTOM left corner,
+     * that equals to TOP left corner of a block with the index
+     * x in upperGroundBlocks array
      * @param minX - left border of planting tree area
      * @param maxX - right border of planting tree area
      * @return
@@ -38,9 +50,11 @@ public class Flora {
         for (int x = 0; x<=numBlocksInRange; x++){
             float randomCoinResult = rand.nextFloat(1);
             if(randomCoinResult < TREE_PROBABILITY) {
-                if (Math.abs((minX + x)%skyLineCoords.size()) < skyLineCoords.size() && checkArea(tempArr,x)){
+                if (Math.abs((minX + x)%skyLineCoords.size()) < skyLineCoords.size()
+                        && checkArea(tempArr,x)){
                     tempArr[x] = 1;
-                    Tree newTree = new Tree(skyLineCoords.get(Math.abs((minX + x)%skyLineCoords.size())));
+                    Tree newTree = new Tree(skyLineCoords.get(Math.abs((minX + x)
+                            %skyLineCoords.size())));
                     trees.add(newTree);
                 }
             }
@@ -48,6 +62,7 @@ public class Flora {
         return trees;
     }
 
+    //the method checks whether there are trees near to the block
     private boolean checkArea(int[]arr,int index){
         if(index>0 && index<arr.length-1){
             return arr[index-1]==0 && arr[index+1]==0;
