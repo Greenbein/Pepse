@@ -9,10 +9,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pepse.PepseConstants.GROUND_TAG;
-import static pepse.PepseConstants.BASE_GROUND_COLOR;
-import static pepse.PepseConstants.DEFAULT_BLOCKS_AMOUNT_IN_COLUMN;
-import static pepse.PepseConstants.START_HEIGHT_FACTOR;
 
 /**
  * We use this class for spawning different blocks
@@ -20,6 +16,13 @@ import static pepse.PepseConstants.START_HEIGHT_FACTOR;
  * to know what is the height for certain x
  */
 public class Terrain {
+    // constants
+    private static final float START_HEIGHT_FACTOR = 2.0f / 3.0f;
+    private static final float DEFAULT_BLOCKS_AMOUNT_IN_COLUMN = 5.0f;
+    private static final Color BASE_GROUND_COLOR =
+            new Color(212, 123, 74);
+    private static final String GROUND_TAG = "ground";
+    // privates
     private final NoiseGenerator ng;
     private final Vector2 windowDimensions;
     private float groundHeightAtX0;
@@ -77,6 +80,13 @@ public class Terrain {
     }
 
     //-------------------EXTENDED API---------------------------
+
+    /**
+     * this function returns coordinates of top block of terrain
+     * for building the trees
+     * @param avatar get avatar object to know where not to put tree
+     * @return coordinates of top block of terrain
+     */
     public List<Vector2> getSkyLineCoordinates(GameObject avatar) {
         List<Vector2>mySkyLineCoordinates = new ArrayList<>();
         for(Vector2 skyLineCoordinate : this.skyLineCoordinates){

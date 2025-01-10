@@ -20,6 +20,7 @@ import java.awt.event.KeyEvent;
  * This class implements the game object avatar
  */
 public class Avatar extends GameObject {
+    //constants
     private static final String AVATAR_TAG = "avatar";
     private static final float VELOCITY_X = 400;
     private static final float VELOCITY_Y = -650;
@@ -34,10 +35,15 @@ public class Avatar extends GameObject {
     private static final String JUMP = "jump";
     private static final String RUN_RIGHT = "run right";
     private static final String RUN_LEFT = "run left";
+    private static final String FRUIT = "fruit";
+    private static final String GROUND = "ground";
+    private static final String TRUNK = "trunk";
+    private static final float FRUIT_AMOUNT_OF_ENERGY = 10.0F;
     //Pics for animations
     private static Renderable [] idleArray;
     private static Renderable [] jumpArray;
     private static Renderable [] runArray;
+    // other privates
     private UserInputListener inputListener;
     private float energy;
     private ImageReader imageReader;
@@ -72,7 +78,7 @@ public class Avatar extends GameObject {
     }
 
     /**
-     *
+     * this function is a getter for avatar's energy
      * @return the avatar's energy
      */
     public float getEnergy() {
@@ -81,7 +87,7 @@ public class Avatar extends GameObject {
 
     @Override
     /**
-     * this function would update the avatar movment and energy
+     * this function would update the avatar movement and energy
      */
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -90,7 +96,6 @@ public class Avatar extends GameObject {
             avatarIdle();
         }
         if (!this.currentState.equals(this.newState)) {
-//            System.out.println(this.newState);
             switchRenderable(this.newState);
             this.currentState = this.newState;
         }
@@ -127,7 +132,8 @@ public class Avatar extends GameObject {
         return runFlag;
     }
 
-    // this function handles the case the avatar jumps
+    // this function handles the case the avatar jumps and
+    // handles the functionality of rain if we are jumping
     private boolean avatarJumps(){
         if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
                 getVelocity().y() == 0){
@@ -176,7 +182,7 @@ public class Avatar extends GameObject {
     }
 
     /**
-     *
+     * this func is a get function of idle array
      * @return idle image array
      */
     public Renderable[] getIdleArray(){
@@ -185,16 +191,20 @@ public class Avatar extends GameObject {
 
     // creates Image array of jump
     private Renderable[] createImageArrayJump(){
-        Renderable jumpImage1 = this.imageReader.readImage("assets/jump_0.png",false);
-        Renderable jumpImage2 = this.imageReader.readImage("assets/jump_1.png",false);
-        Renderable jumpImage3 = this.imageReader.readImage("assets/jump_2.png",false);
-        Renderable jumpImage4 = this.imageReader.readImage("assets/jump_3.png",false);
+        Renderable jumpImage1 = this.imageReader.readImage
+                ("assets/jump_0.png",false);
+        Renderable jumpImage2 = this.imageReader.readImage
+                ("assets/jump_1.png",false);
+        Renderable jumpImage3 = this.imageReader.readImage
+                ("assets/jump_2.png",false);
+        Renderable jumpImage4 = this.imageReader.readImage
+                ("assets/jump_3.png",false);
         Renderable [] animationsJump = {jumpImage1, jumpImage2, jumpImage3, jumpImage4};
         return animationsJump;
     }
 
     /**
-     *
+     * this func is a get function of jump array
      * @return jump image array
      */
     public Renderable[] getjumpArray(){
@@ -221,7 +231,7 @@ public class Avatar extends GameObject {
         return this.runArray;
     }
 
-    // switch rendarable animation
+    // switch renderable animation
     private void switchRenderable(String state){
         Renderable [] imageArray;
         AnimationRenderable animation;
@@ -248,26 +258,34 @@ public class Avatar extends GameObject {
     }
 
     @Override
+    /**
+     * this function defines which objects the avatar
+     * should collide with
+     */
     public boolean shouldCollideWith(GameObject other) {
-        return other.getTag().equals("fruit")||other.getTag().equals("ground")||other.getTag().equals("trunk");
+        return other.getTag().equals(FRUIT)||other.getTag().equals(GROUND)
+                ||other.getTag().equals(TRUNK);
     }
 
     @Override
+    /**
+     * this function defines
+     */
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
         switch (other.getTag()){
-            case "ground":
+            case GROUND:
                 this.transform().setVelocityY(0);
                 break;
-            case "trunk":
+            case TRUNK:
                 this.transform().setVelocityX(0);
                 break;
-            case "fruit":
-                if(this.energy+10.0f>MAX_ENERGY){
+            case FRUIT:
+                if(this.energy + FRUIT_AMOUNT_OF_ENERGY > MAX_ENERGY){
                     this.energy=MAX_ENERGY;
                 }
                 else{
-                    this.energy+=10.0f;
+                    this.energy += FRUIT_AMOUNT_OF_ENERGY;
                 }
                 this.gameManager.removeObject(other, Layer.DEFAULT);
                 break;

@@ -12,7 +12,7 @@ import java.awt.*;
 
 
 /**
- * the class implements nights's functionality in the game
+ * the class implements game object nights functionality in the game
  */
 public class Night {
     private static final Color BASIC_NIGHT_COLOR =

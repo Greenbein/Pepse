@@ -16,8 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static pepse.PepseConstants.START_HEIGHT_FACTOR;
 
+/**
+ * This class implements the  game object cloud
+ */
 public class Cloud {
     private static final Color BASE_CLOUD_COLOR = new Color(255, 255,
             255);
@@ -30,17 +32,25 @@ public class Cloud {
             List.of(0, 1, 1, 1, 0, 0),
             List.of(0, 0, 0, 0, 0, 0)
     );
+    private static final float TRANSITION_TIME_CLOUD = 10f;
     private final List<Block>cloudBlocks;
     private final Vector2 topLeftCornerVectorCloud;
-    private final float rightSideScreen;
+    private final float cloudOffScreenX;
 
-    public Cloud(Vector2 positionVector,float rightSideScreen ){
+    /**
+     * constructor of game object cloud
+     * @param cordsTopLeftCornerCloud holds the coords of the top left corner of the cloud
+     * @param cloudOffScreenX hold the x coords that the cloud would exit the screen from
+     *                        the right edge of the screen
+     */
+    public Cloud(Vector2 cordsTopLeftCornerCloud,float cloudOffScreenX ){
         this.cloudBlocks = new ArrayList<>();
-        this.topLeftCornerVectorCloud = positionVector;
-        this.rightSideScreen = rightSideScreen;
+        this.topLeftCornerVectorCloud = cordsTopLeftCornerCloud;
+        this.cloudOffScreenX = cloudOffScreenX;
         createCloud(CLOUD_SHAPE);
     }
 
+    // this function creates a block of a cloud
     private Block addCloudBlock(Vector2 topLeftCornerBlock, float maxX) {
         Block cloudBlock = new Block(topLeftCornerBlock, new
                 RectangleRenderable(ColorSupplier.approximateMonoColor(
@@ -50,6 +60,7 @@ public class Cloud {
             cloudBlock,
             0,
             false,
+             // callback for the cloud block movement
              ()-> new Transition<Float>(
                     cloudBlock,
                     (Float x)-> cloudBlock.setTopLeftCorner(new Vector2
@@ -57,7 +68,7 @@ public class Cloud {
                     0f,
                      maxX ,
                      Transition.LINEAR_INTERPOLATOR_FLOAT,
-                    10,
+                     TRANSITION_TIME_CLOUD,
                      Transition.TransitionType.TRANSITION_LOOP,
                     null)
 
@@ -66,6 +77,8 @@ public class Cloud {
         return cloudBlock;
     }
 
+    // this func creates the whole cloud with the given list cloudShape
+    // and with the func addCloudBlock for each block that is in the cloud
     private void createCloud(List<List<Integer>> cloudShape){
         for(int i = 0; i < cloudShape.size(); i++){
             List<Integer> row = cloudShape.get(i);
@@ -74,12 +87,16 @@ public class Cloud {
                     Vector2 cloudPosition = new Vector2(topLeftCornerVectorCloud.x()
                             + j * Block.SIZE,
                             topLeftCornerVectorCloud.y() + i * Block.SIZE);
-                    this.cloudBlocks.add(addCloudBlock(cloudPosition,rightSideScreen));
+                    this.cloudBlocks.add(addCloudBlock(cloudPosition,cloudOffScreenX));
                 }
             }
         }
     }
 
+    /**
+     * this func is a get func for the cloud block list
+     * @return the list of the cloud blocks
+     */
     public List<Block> getCloudBlocks(){
         return cloudBlocks;
     }

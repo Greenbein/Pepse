@@ -8,8 +8,6 @@ import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
 import java.awt.*;
-import static pepse.PepseConstants.START_HEIGHT_FACTOR;
-
 /**
  * Here we build a class for sun object.
  * It rotates according to day time around a specific point on a skyline
@@ -17,6 +15,7 @@ import static pepse.PepseConstants.START_HEIGHT_FACTOR;
 public class Sun{
     private static final String SUN_TAG= "sun";
     private static final Renderable OVAL = new OvalRenderable(Color.YELLOW);
+    private static final float START_HEIGHT_FACTOR = 2.0f / 3.0f;
     private static final float DEFAULT_SUN_SIZE = 100.0f;
     private static final float ROTATION_RADIUS = 300.0f;
     private static final float INITIAL_ANGLE = 0.0f;

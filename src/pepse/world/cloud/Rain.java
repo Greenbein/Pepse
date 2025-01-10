@@ -4,7 +4,6 @@ import danogl.components.CoordinateSpace;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
-import pepse.PepseConstants;
 import pepse.PepseGameManager;
 import pepse.RandomDoArrayGenerator;
 import pepse.util.ColorSupplier;
