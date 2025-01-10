@@ -135,6 +135,7 @@ public class Avatar extends GameObject {
                 this.newState = JUMP;
                 this.energy -= MIN_JUMP_ENERGY;
                 transform().setVelocityY(VELOCITY_Y);
+                this.gameManager.generateRain();
                 return true;
             }
         }

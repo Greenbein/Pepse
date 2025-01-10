@@ -76,7 +76,7 @@ public class Tree{
         float y = bottomLeftTrunkCorner.y()-Block.SIZE*(trunkHeight+1)-Block.SIZE*(cols/2.0f);
         int foliageNumber = this.rand.nextInt((rows*cols)/2)+(rows*cols)/2;
         int[][] tempArray = new int[rows][cols];
-        RandomDoArrayGenerator.placeRandomNumberXTimes(tempArray,foliageNumber,1);
+        RandomDoArrayGenerator.placeRandomNumberXTimes(tempArray,foliageNumber,1,0);
         for(int i = 0; i<rows; i++){
             for(int j = 0; j<cols; j++){
                 if(tempArray[i][j] == 1){
@@ -131,7 +131,7 @@ public class Tree{
         float y = bottomLeftTrunkCorner.y()-Block.SIZE*(trunkHeight+1)-Block.SIZE*(cols/2.0f);
         int fruitNumber = this.rand.nextInt((rows*cols/4))+5;
         int[][] tempArray =  new int[rows][cols];
-        RandomDoArrayGenerator.placeRandomNumberXTimes(tempArray, fruitNumber,2);
+        RandomDoArrayGenerator.placeRandomNumberXTimes(tempArray, fruitNumber,2,0);
         for(int i = 0; i<rows; i++){
             for(int j = 0; j<cols; j++){
                 if(tempArray[i][j] == 2){

@@ -13,6 +13,7 @@ import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 import pepse.world.*;
 import pepse.world.cloud.Cloud;
+import pepse.world.cloud.Rain;
 import pepse.world.daynight.*;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class PepseGameManager extends GameManager {
     private GameObject energyBar;
     private WindowController windowController;
     private RenderingController renderingController;
+    private Cloud cloud;
+    private Rain rain;
 
     @Override
     /**
@@ -43,6 +46,7 @@ public class PepseGameManager extends GameManager {
         createEnergyBar();
         this.renderingController =  new RenderingController(this.avatar,windowController,this);
         spawnCloud();
+        this.rain = new Rain(this.cloud.getCloudBlocks(),this);
     }
 
     private void spawnSky(){
@@ -74,10 +78,10 @@ public class PepseGameManager extends GameManager {
     private void spawnCloud(){
         Vector2 initialTopLeftCorner = new Vector2(- Block.SIZE *6,
                 this.windowController.getWindowDimensions().y()/40);
-        Cloud cloud = new Cloud(initialTopLeftCorner,
+        this.cloud = new Cloud(initialTopLeftCorner,
                 this.windowController.getWindowDimensions().x() + Block.SIZE *6);
         for(Block cloudBlock: cloud.getCloudBlocks()){
-            gameObjects().addGameObject(cloudBlock, Layer.BACKGROUND);
+            gameObjects().addGameObject(cloudBlock, -190);
         }
     }
 
@@ -137,6 +141,9 @@ public class PepseGameManager extends GameManager {
             case "fruit":
                 gameObjects().addGameObject(o, Layer.DEFAULT);
                 break;
+            case "rain":
+                gameObjects().addGameObject(o, Layer.BACKGROUND);
+                break;
             default:
                 break;
         }
@@ -158,11 +165,19 @@ public class PepseGameManager extends GameManager {
         }
     }
 
+    public void addObject(GameObject object,int layer){
+        gameObjects().addGameObject(object,layer);
+    }
+
     public void removeObject(GameObject object,int layer) {
         if(object.getTag().equals("fruit")){
             this.renderingController.removeObject(object);
         }
         gameObjects().removeGameObject(object,layer);
+    }
+
+    public void generateRain(){
+        this.rain.generateRain();
     }
 
     /**
