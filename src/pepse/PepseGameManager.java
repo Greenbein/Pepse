@@ -46,7 +46,7 @@ public class PepseGameManager extends GameManager {
         createEnergyBar();
         this.renderingController =  new RenderingController(this.avatar,windowController,this);
         spawnCloud();
-        this.rain = new Rain(this.cloud.getCloudBlocks(),this);
+        this.rain = new Rain(this);
     }
 
     private void spawnSky(){
@@ -94,6 +94,7 @@ public class PepseGameManager extends GameManager {
         updateEnergyBar();
         this.renderingController.updateAllObjectsArr();
         this.renderingController.selectObjectsAndDraw();
+        this.rain.setTopLeftCloudCorner(this.cloud.getCloudBlocks().get(0).getTopLeftCorner());
     }
 
     //========================Methods for real time rendering========================
