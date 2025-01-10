@@ -6,10 +6,12 @@ import danogl.components.Transition;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
+import pepse.RandomDoArrayGenerator;
 import pepse.util.ColorSupplier;
 import pepse.world.Block;
 
 import java.awt.*;
+import java.security.interfaces.RSAKey;
 import java.util.*;
 import java.util.List;
 
@@ -31,9 +33,9 @@ public class Tree{
     private static final float INITIAL_DIMS_LEAF_FACTOR = 1.0f;
     private static final float FINAL_DIMS_LEAF_FACTOR = 1.4f;
     private static final Vector2 DEFAULT_LEAF_DIMS = new Vector2(Block.SIZE, Block.SIZE);
-    List<Block>trunkBlocks;
-    List<Block>leafBlocks;
-    List<Block>fruitBlocks;
+    private final List<Block>trunkBlocks;
+    private final List<Block>leafBlocks;
+    private final List<Block>fruitBlocks;
 
     /**
      * Constructor for Tree class
@@ -50,9 +52,6 @@ public class Tree{
 
     // this function creates a tree
     private void createTree(Vector2 bottomLeftTrunkCorner){
-//        int trunkHeight = this.rand.nextInt(3) + DEFAULT_TRUNK_BLOCK_AMOUNT;
-//        int rows = this.rand.nextInt(4) +DEFAULT_LEAFS_ROWS;
-//        int cols = this.rand.nextInt(4) + DEFAULT_LEAFS_COLS;
         generateTrunkBlocks(bottomLeftTrunkCorner, DEFAULT_TRUNK_BLOCK_AMOUNT);
         generateLeafBlocks(bottomLeftTrunkCorner,DEFAULT_LEAFS_ROWS,DEFAULT_LEAFS_COLS,DEFAULT_TRUNK_BLOCK_AMOUNT);
         generateFruitBlocks(bottomLeftTrunkCorner,DEFAULT_LEAFS_ROWS,DEFAULT_LEAFS_COLS,DEFAULT_TRUNK_BLOCK_AMOUNT);
@@ -77,7 +76,7 @@ public class Tree{
         float y = bottomLeftTrunkCorner.y()-Block.SIZE*(trunkHeight+1)-Block.SIZE*(cols/2.0f);
         int foliageNumber = this.rand.nextInt((rows*cols)/2)+(rows*cols)/2;
         int[][] tempArray = new int[rows][cols];
-        placeRandomNumberXTimes(tempArray, foliageNumber,1);
+        RandomDoArrayGenerator.placeRandomNumberXTimes(tempArray,foliageNumber,1);
         for(int i = 0; i<rows; i++){
             for(int j = 0; j<cols; j++){
                 if(tempArray[i][j] == 1){
@@ -132,7 +131,7 @@ public class Tree{
         float y = bottomLeftTrunkCorner.y()-Block.SIZE*(trunkHeight+1)-Block.SIZE*(cols/2.0f);
         int fruitNumber = this.rand.nextInt((rows*cols/4))+5;
         int[][] tempArray =  new int[rows][cols];
-        placeRandomNumberXTimes(tempArray, fruitNumber,2);
+        RandomDoArrayGenerator.placeRandomNumberXTimes(tempArray, fruitNumber,2);
         for(int i = 0; i<rows; i++){
             for(int j = 0; j<cols; j++){
                 if(tempArray[i][j] == 2){
@@ -158,32 +157,6 @@ public class Tree{
         fruitBlock.setTag(FRUIT);
         this.fruitBlocks.add(fruitBlock);
     }
-
-
-    private void placeRandomNumberXTimes(int[][] array, int x, int number) {
-        int zeroCount = 0;
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
-                if (array[i][j] == 0) {
-                    zeroCount++;
-                }
-            }
-        }
-        if (x > zeroCount) {
-            throw new IllegalArgumentException("x cannot be greater than the number of zero cells in the array");
-        }
-        Random rand = new Random();
-        while (x > 0) {
-            int row = rand.nextInt(array.length);
-            int col = rand.nextInt(array[0].length);
-
-            if (array[row][col] == 0) {
-                array[row][col] = number;
-                x--;
-            }
-        }
-    }
-
 
     public List<Block> getTrunkBlocks(){
         return this.trunkBlocks;

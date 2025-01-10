@@ -254,29 +254,25 @@ public class Avatar extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        String message = "Colliding with: "+other.getTag();
-        TextRenderable text = new TextRenderable(message);
-        this.gameManager.collisionBar.renderer().setRenderable(text);
-        if(other.getTag().equals("ground")){
-            this.transform().setVelocityY(0);
-//            if(this.getTopLeftCorner().y()>=other.getTopLeftCorner().y()+Block.SIZE/2.0f){
-//                this.setTopLeftCorner(new Vector2(this.getTopLeftCorner().x(),this.getTopLeftCorner().y()-Block.SIZE));
-//            }
-        }
-        if(other.getTag().equals("trunk")){
-            this.transform().setVelocityX(0);
-//            if(this.getTopLeftCorner().y()>=other.getTopLeftCorner().y()+Block.SIZE/2.0f){
-//                this.setTopLeftCorner(new Vector2(this.getTopLeftCorner().x(),this.getTopLeftCorner().y()-Block.SIZE));
-//            }
-        }
-        if(other.getTag().equals("fruit")){
-            if(this.energy+10.0f>MAX_ENERGY){
-                this.energy=MAX_ENERGY;
-            }
-            else{
-                this.energy+=10.0f;
-            }
-            this.gameManager.removeObject(other, Layer.DEFAULT);
+        switch (other.getTag()){
+            case "ground":
+                this.transform().setVelocityY(0);
+                break;
+            case "trunk":
+                this.transform().setVelocityX(0);
+                break;
+            case "fruit":
+                if(this.energy+10.0f>MAX_ENERGY){
+                    this.energy=MAX_ENERGY;
+                }
+                else{
+                    this.energy+=10.0f;
+                }
+                this.gameManager.removeObject(other, Layer.DEFAULT);
+                break;
+            default:
+                break;
+
         }
     }
 }
