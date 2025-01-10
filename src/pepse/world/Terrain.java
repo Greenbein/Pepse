@@ -50,23 +50,12 @@ public class Terrain {
         minX = (int)(Math.floor((double) minX / Block.SIZE) * Block.SIZE);
         maxX = (int)(Math.floor((double) maxX / Block.SIZE) * Block.SIZE);
         for (int x = minX; x <= maxX; x += Block.SIZE) {
-            //Flat land case
-//            int currentHeight = (int)(this.windowDimensions.y()*(2.0f/3.0f));
             int currentHeight = (int) (Math.floor(groundHeightAt(x) / Block.SIZE) * Block.SIZE);
             this.skyLineCoordinates.add(new Vector2(x, currentHeight));
             for (int y = currentHeight; y <= (int) this.windowDimensions.y()+Block.SIZE*5; y += Block.SIZE) {
-                Block myBlock;
-                if(x==minX){
-                    myBlock = new Block(new Vector2(x, y),
-                            new RectangleRenderable
-                                    (ColorSupplier.approximateColor(Color.RED)));
-                }
-                else {
-                    myBlock = new Block(new Vector2(x, y),
+                Block myBlock = new Block(new Vector2(x, y),
                             new RectangleRenderable
                                     (ColorSupplier.approximateColor(BASE_GROUND_COLOR)));
-                }
-//                myBlock.setDimensions(Vector2.ONES.mult(Block.SIZE*3));
                 myBlock.setTag(GROUND_TAG);
                 blocks.add(myBlock);
             }

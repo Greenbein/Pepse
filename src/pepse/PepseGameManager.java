@@ -12,6 +12,7 @@ import danogl.gui.rendering.Camera;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 import pepse.world.*;
+import pepse.world.cloud.Cloud;
 import pepse.world.daynight.*;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class PepseGameManager extends GameManager {
         spawnAvatar(inputListener,imageReader);
         createEnergyBar();
         this.renderingController =  new RenderingController(this.avatar,windowController,this);
-
+        spawnCloud();
     }
 
     private void spawnSky(){
@@ -68,6 +69,16 @@ public class PepseGameManager extends GameManager {
         setCamera(new Camera(avatar, Vector2.ZERO,
                 windowController.getWindowDimensions(),
                 windowController.getWindowDimensions()));
+    }
+
+    private void spawnCloud(){
+        Vector2 initialTopLeftCorner = new Vector2(- Block.SIZE *6,
+                this.windowController.getWindowDimensions().y()/40);
+        Cloud cloud = new Cloud(initialTopLeftCorner,
+                this.windowController.getWindowDimensions().x() + Block.SIZE *6);
+        for(Block cloudBlock: cloud.getCloudBlocks()){
+            gameObjects().addGameObject(cloudBlock, Layer.BACKGROUND);
+        }
     }
 
     @Override
@@ -126,8 +137,6 @@ public class PepseGameManager extends GameManager {
             case "fruit":
                 gameObjects().addGameObject(o, Layer.DEFAULT);
                 break;
-            case "cloud":
-                gameObjects().addGameObject(o,Layer.BACKGROUND);
             default:
                 break;
         }
@@ -143,9 +152,6 @@ public class PepseGameManager extends GameManager {
                 break;
             case "fruit":
                 gameObjects().removeGameObject(o, Layer.DEFAULT);
-                break;
-            case "cloud":
-                gameObjects().removeGameObject(o, Layer.BACKGROUND);
                 break;
             default:
                 break;
