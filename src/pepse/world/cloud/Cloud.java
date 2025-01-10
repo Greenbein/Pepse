@@ -21,9 +21,6 @@ import static pepse.PepseConstants.START_HEIGHT_FACTOR;
 public class Cloud {
     private static final Color BASE_CLOUD_COLOR = new Color(255, 255,
             255);
-    private static final Renderable CLOUD_RENDERABLE = new
-            RectangleRenderable(ColorSupplier.approximateMonoColor(
-            BASE_CLOUD_COLOR));
     private static final String CLOUD_TAG = "cloud";
     private static final List<List<Integer>> CLOUD_SHAPE = List.of(
             List.of(0, 1, 1, 0, 0, 0),
@@ -45,7 +42,9 @@ public class Cloud {
     }
 
     private Block addCloudBlock(Vector2 topLeftCornerBlock, float maxX) {
-        Block cloudBlock = new Block(topLeftCornerBlock, CLOUD_RENDERABLE);
+        Block cloudBlock = new Block(topLeftCornerBlock, new
+                RectangleRenderable(ColorSupplier.approximateMonoColor(
+                BASE_CLOUD_COLOR)));
         cloudBlock.setTag(CLOUD_TAG);
         new ScheduledTask(
             cloudBlock,
