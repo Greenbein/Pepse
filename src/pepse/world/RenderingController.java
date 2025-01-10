@@ -72,14 +72,9 @@ public class RenderingController {
         List<GameObject> objectsToDraw = new ArrayList<>();
         float windowWidth = this.windowController.getWindowDimensions().x();
         for (GameObject gameObject : allGameObjects) {
-            if (!gameObject.getTag().equals("cloud")) {
-                if (gameObject.getCenter().x() < avatarX + windowWidth / 2.0f && gameObject.getCenter().x() > avatarX - windowWidth / 2.0f) {
-                    objectsToDraw.add(gameObject);
-                }
-            } else {
-                if (Math.abs(gameObject.getCenter().x() - avatarX) < 2 * windowWidth) {
-                    objectsToDraw.add(gameObject);
-                }
+            if (gameObject.getCenter().x() < avatarX + windowWidth / 2.0f &&
+                    gameObject.getCenter().x() > avatarX - windowWidth / 2.0f) {
+                objectsToDraw.add(gameObject);
             }
         }
         this.pepse.drawObjects(objectsToDraw);

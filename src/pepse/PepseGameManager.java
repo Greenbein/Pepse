@@ -189,10 +189,6 @@ public class PepseGameManager extends GameManager {
         new PepseGameManager().run();
     }
 
-
-
-
-
     //========================Create different bars========================
 
     private void createEnergyBar(){
